@@ -216,6 +216,26 @@ var mockServerClient = function (host, port) {
         return _this;
     };
     /**
+         * Clear all request logs that match the specified path
+         *
+         * @param pathOrRequestMatcher  if a string is passed in the value will be treated as the path to
+         *                              decide which expectations to cleared, however if an object is passed
+         *                              in the value will be treated as a full request matcher object
+         */
+        var clearRequestLog = function (pathOrRequestMatcher) {
+            xmlhttp.open("PUT", mockServerUrl + "/clearRequestLog", false);
+            xmlhttp.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+            if (typeof pathOrRequestMatcher === "string") {
+                xmlhttp.send(JSON.stringify(createResponseMatcher(pathOrRequestMatcher)));
+            } else if (pathOrRequestMatcher) {
+                xmlhttp.send(JSON.stringify(pathOrRequestMatcher));
+            } else {
+                xmlhttp.send(JSON.stringify(createResponseMatcher(".*")));
+            }
+            return _this;
+        };
+
+    /**
      * Retrieve the recorded requests that match the parameter, as follows:
      * - use a string value to match on path,
      * - use a request matcher object to match on a full request,
@@ -270,6 +290,7 @@ var mockServerClient = function (host, port) {
         verifySequence: verifySequence,
         reset: reset,
         clear: clear,
+        clearRequestLog: clearRequestLog,
         retrieveRequests: retrieveRequests,
         retrieveExpectations: retrieveExpectations
     };

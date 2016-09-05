@@ -321,6 +321,28 @@ public class MockServerServletTest {
     }
 
     @Test
+    public void shouldClearRequestLogs() throws IOException {
+        // given
+        MockHttpServletResponse httpServletResponse = new MockHttpServletResponse();
+        HttpRequest httpRequest = new HttpRequest();
+
+        when(mockHttpServletRequestToMockServerRequestDecoder.mapHttpServletRequestToMockServerRequest(any(HttpServletRequest.class)))
+                .thenReturn(
+                        request()
+                                .withMethod("PUT")
+                                .withPath("/clearRequestLog")
+                                .withBody("requestBytes")
+                );
+        when(mockHttpRequestSerializer.deserialize("requestBytes")).thenReturn(httpRequest);
+
+        // when
+        mockServerServlet.service(new MockHttpServletRequest(), httpServletResponse);
+
+        // then
+        verify(mockRequestLogFilter).clear(httpRequest);
+    }
+
+    @Test
     public void shouldResetMockServer() throws IOException {
         // given
         MockHttpServletResponse httpServletResponse = new MockHttpServletResponse();

@@ -25,7 +25,7 @@ public class MockServerClient extends AbstractClient {
      * Start the client communicating to a MockServer at the specified host and port
      * for example:
      *
-     *   MockServerClient mockServerClient = new MockServerClient("localhost", 1080);
+     * MockServerClient mockServerClient = new MockServerClient("localhost", 1080);
      *
      * @param host the host for the MockServer to communicate with
      * @param port the port for the MockServer to communicate with
@@ -38,10 +38,10 @@ public class MockServerClient extends AbstractClient {
      * Start the client communicating to a MockServer at the specified host and port
      * and contextPath for example:
      *
-     *   MockServerClient mockServerClient = new MockServerClient("localhost", 1080, "/mockserver");
+     * MockServerClient mockServerClient = new MockServerClient("localhost", 1080, "/mockserver");
      *
-     * @param host the host for the MockServer to communicate with
-     * @param port the port for the MockServer to communicate with
+     * @param host        the host for the MockServer to communicate with
+     * @param port        the port for the MockServer to communicate with
      * @param contextPath the context path that the MockServer war is deployed to
      */
     public MockServerClient(String host, int port, String contextPath) {
@@ -52,19 +52,19 @@ public class MockServerClient extends AbstractClient {
      * Specify an unlimited expectation that will respond regardless of the number of matching http
      * for example:
      *
-     *   mockServerClient
-     *           .when(
-     *                   request()
-     *                           .withPath("/some_path")
-     *                           .withBody("some_request_body")
-     *           )
-     *           .respond(
-     *                   response()
-     *                           .withBody("some_response_body")
-     *                           .withHeaders(
-     *                                   new Header("responseName", "responseValue")
-     *                           )
-     *           );
+     * mockServerClient
+     * .when(
+     * request()
+     * .withPath("/some_path")
+     * .withBody("some_request_body")
+     * )
+     * .respond(
+     * response()
+     * .withBody("some_response_body")
+     * .withHeaders(
+     * new Header("responseName", "responseValue")
+     * )
+     * );
      *
      * @param httpRequest the http request that must be matched for this expectation to respond
      * @return an Expectation object that can be used to specify the response
@@ -77,20 +77,20 @@ public class MockServerClient extends AbstractClient {
      * Specify an limited expectation that will respond a specified number of times when the http is matched
      * for example:
      *
-     *   mockServerClient
-     *           .when(
-     *                   new HttpRequest()
-     *                           .withPath("/some_path")
-     *                           .withBody("some_request_body"),
-     *                   Times.exactly(5)
-     *           )
-     *           .respond(
-     *                   new HttpResponse()
-     *                           .withBody("some_response_body")
-     *                           .withHeaders(
-     *                                   new Header("responseName", "responseValue")
-     *                           )
-     *           );
+     * mockServerClient
+     * .when(
+     * new HttpRequest()
+     * .withPath("/some_path")
+     * .withBody("some_request_body"),
+     * Times.exactly(5)
+     * )
+     * .respond(
+     * new HttpResponse()
+     * .withBody("some_response_body")
+     * .withHeaders(
+     * new Header("responseName", "responseValue")
+     * )
+     * );
      *
      * @param httpRequest the http request that must be matched for this expectation to respond
      * @param times       the number of times to respond when this http is matched
@@ -104,21 +104,21 @@ public class MockServerClient extends AbstractClient {
      * Specify an limited expectation that will respond a specified number of times when the http is matched
      * for example:
      *
-     *   mockServerClient
-     *           .when(
-     *                   new HttpRequest()
-     *                           .withPath("/some_path")
-     *                           .withBody("some_request_body"),
-     *                   Times.exactly(5),
-     *                   TimeToLive.exactly(TimeUnit.SECONDS, 120),
-     *           )
-     *           .respond(
-     *                   new HttpResponse()
-     *                           .withBody("some_response_body")
-     *                           .withHeaders(
-     *                                   new Header("responseName", "responseValue")
-     *                           )
-     *           );
+     * mockServerClient
+     * .when(
+     * new HttpRequest()
+     * .withPath("/some_path")
+     * .withBody("some_request_body"),
+     * Times.exactly(5),
+     * TimeToLive.exactly(TimeUnit.SECONDS, 120),
+     * )
+     * .respond(
+     * new HttpResponse()
+     * .withBody("some_response_body")
+     * .withHeaders(
+     * new Header("responseName", "responseValue")
+     * )
+     * );
      *
      * @param httpRequest the http request that must be matched for this expectation to respond
      * @param times       the number of times to respond when this http is matched
@@ -194,6 +194,16 @@ public class MockServerClient extends AbstractClient {
         return this;
     }
 
+    /**
+     * Clear all request logs that match the http
+     *
+     * @param httpRequest the http request that is matched against when deciding whether to clear each request log if null all request logs are cleared
+     */
+    public MockServerClient clearRequestLog(HttpRequest httpRequest) {
+        sendRequest(request().withMethod("PUT").withPath(calculatePath("clearRequestLog")).withBody(httpRequest != null ? httpRequestSerializer.serialize(httpRequest) : "", Charsets.UTF_8));
+        return this;
+    }
+
     void sendExpectation(Expectation expectation) {
         HttpResponse httpResponse = sendRequest(request().withMethod("PUT").withPath(calculatePath("expectation")).withBody(expectation != null ? expectationSerializer.serialize(expectation) : "", Charsets.UTF_8));
         if (httpResponse != null && httpResponse.getStatusCode() != 201) {
@@ -204,15 +214,15 @@ public class MockServerClient extends AbstractClient {
     /**
      * Verify a list of requests have been sent in the order specified for example:
      *
-     *   mockServerClient
-     *           .verify(
-     *                   request()
-     *                           .withPath("/first_request")
-     *                           .withBody("some_request_body"),
-     *                   request()
-     *                           .withPath("/second_request")
-     *                           .withBody("some_request_body")
-     *           );
+     * mockServerClient
+     * .verify(
+     * request()
+     * .withPath("/first_request")
+     * .withBody("some_request_body"),
+     * request()
+     * .withPath("/second_request")
+     * .withBody("some_request_body")
+     * );
      *
      * @param httpRequests the http requests that must be matched for this verification to pass
      * @throws AssertionError if the request has not been found
@@ -234,22 +244,22 @@ public class MockServerClient extends AbstractClient {
     /**
      * Verify a request has been sent for example:
      *
-     *   mockServerClient
-     *           .verify(
-     *                   request()
-     *                           .withPath("/some_path")
-     *                           .withBody("some_request_body"),
-     *                   VerificationTimes.exactly(3)
-     *           );
+     * mockServerClient
+     * .verify(
+     * request()
+     * .withPath("/some_path")
+     * .withBody("some_request_body"),
+     * VerificationTimes.exactly(3)
+     * );
      *
      * VerificationTimes supports multiple static factory methods:
      *
-     *   once()      - verify the request was only received once
-     *   exactly(n)  - verify the request was only received exactly n times
-     *   atLeast(n)  - verify the request was only received at least n times
+     * once()      - verify the request was only received once
+     * exactly(n)  - verify the request was only received exactly n times
+     * atLeast(n)  - verify the request was only received at least n times
      *
      * @param httpRequest the http request that must be matched for this verification to pass
-     * @param times the number of times this request must be matched
+     * @param times       the number of times this request must be matched
      * @throws AssertionError if the request has not been found
      */
     public MockServerClient verify(HttpRequest httpRequest, VerificationTimes times) throws AssertionError {

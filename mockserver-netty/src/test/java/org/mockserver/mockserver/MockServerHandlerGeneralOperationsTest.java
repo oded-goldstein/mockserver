@@ -163,6 +163,27 @@ public class MockServerHandlerGeneralOperationsTest {
     }
 
     @Test
+    public void shouldClearRequestLog() {
+        // given
+        HttpRequest request = request("/clearRequestLog").withMethod("PUT").withBody("some_content");
+
+        // when
+        embeddedChannel.writeInbound(request);
+
+        // then - request deserialized
+        verify(mockHttpRequestSerializer).deserialize("some_content");
+
+        // then - filter and matcher is cleared
+        verify(mockRequestLogFilter).clear(mockHttpRequest);
+
+        // and - correct response written to ChannelHandlerContext
+        HttpResponse httpResponse = (HttpResponse) embeddedChannel.readOutbound();
+        assertThat(httpResponse.getStatusCode(), is(HttpResponseStatus.ACCEPTED.code()));
+        assertThat(httpResponse.getBodyAsString(), is(""));
+    }
+
+
+    @Test
     public void shouldDumpExpectationsToLog() {
         // given
         HttpRequest request = request("/dumpToLog").withMethod("PUT").withBody("some_content");

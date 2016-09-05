@@ -109,6 +109,13 @@ public class MockServerHandler extends SimpleChannelInboundHandler<HttpRequest> 
                 logFormatter.infoLog("clearing expectations and request logs that match:{}", httpRequest);
                 writeResponse(ctx, request, HttpResponseStatus.ACCEPTED);
 
+            } else if (request.matches("PUT", "/clearRequestLog")) {
+
+                org.mockserver.model.HttpRequest httpRequest = httpRequestSerializer.deserialize(request.getBodyAsString());
+                requestLogFilter.clear(httpRequest);
+                logFormatter.infoLog("clearing request logs that match:{}", httpRequest);
+                writeResponse(ctx, request, HttpResponseStatus.ACCEPTED);
+
             } else if (request.matches("PUT", "/reset")) {
 
                 requestLogFilter.reset();

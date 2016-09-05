@@ -79,6 +79,12 @@ public class MockServerServlet extends HttpServlet {
                 mockServerMatcher.clear(httpRequest);
                 httpServletResponse.setStatus(HttpStatusCode.ACCEPTED_202.code());
 
+            } else if (request.matches("PUT", "/clearRequestLog")) {
+
+                    HttpRequest httpRequest = httpRequestSerializer.deserialize(request.getBodyAsString());
+                    requestLogFilter.clear(httpRequest);
+                    httpServletResponse.setStatus(HttpStatusCode.ACCEPTED_202.code());
+
             } else if (request.matches("PUT", "/reset")) {
 
                 requestLogFilter.reset();

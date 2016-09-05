@@ -424,6 +424,37 @@ public class MockServerClientTest {
     }
 
     @Test
+    public void shouldSendClearRequestLogRequest() throws Exception {
+        // given
+        HttpRequest someRequestMatcher = new HttpRequest()
+                .withPath("/some_path")
+                .withBody(new StringBody("some_request_body"));
+        when(mockHttpRequestSerializer.serialize(someRequestMatcher)).thenReturn(someRequestMatcher.toString());
+
+        // when
+        mockServerClient.clearRequestLog(someRequestMatcher);
+
+        // then
+        verify(mockHttpClient).sendRequest(outboundRequest("localhost", 1080, "",
+                request()
+                        .withMethod("PUT")
+                        .withPath("/clearRequestLog")
+                        .withBody(someRequestMatcher.toString(), Charsets.UTF_8))
+        );
+    }
+
+    @Test
+    public void shouldSendClearClearRequestLogRequestForNullRequest() throws Exception {
+        // when
+        mockServerClient
+                .clearRequestLog(null);
+
+        // then
+        verify(mockHttpClient).sendRequest(outboundRequest("localhost", 1080, "", request().withMethod("PUT").withPath("/clearRequestLog").withBody("", Charsets.UTF_8)));
+    }
+
+
+    @Test
     public void shouldRetrieveRequests() throws UnsupportedEncodingException {
         // given - a request
         HttpRequest someRequestMatcher = new HttpRequest()

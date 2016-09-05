@@ -818,6 +818,110 @@ describe("mockServerClient client:", function () {
         expect(xmlhttp.responseText).toEqual('{"name":"value"}');
     });
 
+
+    it("should clear request logs by path", function () {
+            // when
+            var client = mockServerClient("localhost", 8097);
+            client.mockSimpleResponse('/somePathOne', {name: 'value'}, 200);
+            client.mockSimpleResponse('/somePathOne', {name: 'value'}, 200);
+            client.mockSimpleResponse('/somePathTwo', {name: 'value'}, 200);
+
+            // then - matching request
+            xmlhttp.open("GET", "http://localhost:8097/somePathOne", false);
+            xmlhttp.send();
+
+            expect(xmlhttp.status).toEqual(200);
+            expect(xmlhttp.responseText).toEqual('{"name":"value"}');
+
+            // when
+            client.clearRequestLog('/somePathOne');
+
+            // then - matching request but cleared
+            xmlhttp.open("GET", "http://localhost:8097/somePathOne", false);
+            xmlhttp.send();
+
+            expect(xmlhttp.status).toEqual(200);
+            expect(xmlhttp.responseText).toEqual('{"name":"value"}');
+
+            // then - matching request and not cleared
+            xmlhttp.open("GET", "http://localhost:8097/somePathTwo", false);
+            xmlhttp.send();
+
+            expect(xmlhttp.status).toEqual(200);
+            expect(xmlhttp.responseText).toEqual('{"name":"value"}');
+        });
+
+        it("should clear request logs by request matcher", function () {
+            // when
+            var client = mockServerClient("localhost", 8097);
+            client.mockSimpleResponse('/somePathOne', {name: 'value'}, 200);
+            client.mockSimpleResponse('/somePathOne', {name: 'value'}, 200);
+            client.mockSimpleResponse('/somePathTwo', {name: 'value'}, 200);
+
+            // then - matching request
+            xmlhttp.open("GET", "http://localhost:8097/somePathOne", false);
+            xmlhttp.send();
+
+            expect(xmlhttp.status).toEqual(200);
+            expect(xmlhttp.responseText).toEqual('{"name":"value"}');
+
+            // when
+            client.clearRequestLog({
+                "path": "/somePathOne"
+            });
+
+            // then - matching request but cleared
+            xmlhttp.open("GET", "http://localhost:8097/somePathOne", false);
+            xmlhttp.send();
+
+            expect(xmlhttp.status).toEqual(200);
+            expect(xmlhttp.responseText).toEqual('{"name":"value"}');
+
+            // then - matching request and not cleared
+            xmlhttp.open("GET", "http://localhost:8097/somePathTwo", false);
+            xmlhttp.send();
+
+            expect(xmlhttp.status).toEqual(200);
+            expect(xmlhttp.responseText).toEqual('{"name":"value"}');
+        });
+
+        it("should clear request logs by expectation matcher", function () {
+            // when
+            var client = mockServerClient("localhost", 8097);
+            client.mockSimpleResponse('/somePathOne', {name: 'value'}, 200);
+            client.mockSimpleResponse('/somePathOne', {name: 'value'}, 200);
+            client.mockSimpleResponse('/somePathTwo', {name: 'value'}, 200);
+
+
+            // then - matching request
+            xmlhttp.open("GET", "http://localhost:8097/somePathOne", false);
+            xmlhttp.send();
+
+            expect(xmlhttp.status).toEqual(200);
+            expect(xmlhttp.responseText).toEqual('{"name":"value"}');
+
+            // when
+            client.clearRequestLog({
+                "httpRequest": {
+                    "path": "/somePathOne"
+                }
+            });
+
+            // then - matching request but cleared
+            xmlhttp.open("GET", "http://localhost:8097/somePathOne", false);
+            xmlhttp.send();
+
+            expect(xmlhttp.status).toEqual(200);
+            expect(xmlhttp.responseText).toEqual('{"name":"value"}');
+
+            // then - matching request and not cleared
+            xmlhttp.open("GET", "http://localhost:8097/somePathTwo", false);
+            xmlhttp.send();
+
+            expect(xmlhttp.status).toEqual(200);
+            expect(xmlhttp.responseText).toEqual('{"name":"value"}');
+        });
+
     it("should reset expectations", function () {
         // when
         var client = mockServerClient("localhost", 8097);
